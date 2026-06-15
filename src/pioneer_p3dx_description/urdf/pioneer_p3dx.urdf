@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<robot name="pioneer_p3dx">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.45 0.35 0.15"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.2 1.0 1.0"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="0.45 0.35 0.15"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="12.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.3" ixy="0.0" ixz="0.0"
+               iyy="0.5" iyz="0.0"
+               izz="0.6"/>
+    </inertial>
+  </link>
+
+  <link name="left_wheel">
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.05"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder radius="0.08" length="0.05"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+               iyy="0.01" iyz="0.0"
+               izz="0.01"/>
+    </inertial>
+  </link>
+
+  <link name="right_wheel">
+    <visual>
+      <geometry>
+        <cylinder radius="0.08" length="0.05"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder radius="0.08" length="0.05"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+               iyy="0.01" iyz="0.0"
+               izz="0.01"/>
+    </inertial>
+  </link>
+
+  <link name="caster_wheel">
+    <visual>
+      <geometry>
+        <sphere radius="0.04"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <sphere radius="0.04"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.2"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001"/>
+    </inertial>
+  </link>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0 0.20 -0.075" rpy="1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.20 -0.075" rpy="1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="caster_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_wheel"/>
+    <origin xyz="-0.16 0 -0.11" rpy="0 0 0"/>
+  </joint>
+
+<gazebo>
+  <plugin filename="gz-sim-diff-drive-system"
+          name="gz::sim::systems::DiffDrive">
+    <left_joint>left_wheel_joint</left_joint>
+    <right_joint>right_wheel_joint</right_joint>
+    <wheel_separation>0.40</wheel_separation>
+    <wheel_radius>0.08</wheel_radius>
+    <odom_publish_frequency>50</odom_publish_frequency>
+    <topic>/cmd_vel</topic>
+    <odom_topic>/odom</odom_topic>
+    <frame_id>odom</frame_id>
+    <child_frame_id>base_link</child_frame_id>
+  </plugin>
+</gazebo>
+
+
+  <!-- IMU LINK -->
+  <link name="imu_link">
+
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.02"/>
+      </geometry>
+
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.02"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.05"/>
+
+      <origin xyz="0 0 0"/>
+
+      <inertia
+        ixx="0.0001"
+        ixy="0"
+        ixz="0"
+        iyy="0.0001"
+        iyz="0"
+        izz="0.0001"/>
+    </inertial>
+
+  </link>
+
+  <!-- IMU FIXED TO ROBOT -->
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+
+    <!-- IMU encima del robot -->
+    <origin xyz="0 0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- GAZEBO IMU SENSOR -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+
+      <always_on>true</always_on>
+
+      <update_rate>100</update_rate>
+
+      <visualize>true</visualize>
+
+      <topic>/imu</topic>
+
+      <imu>
+        <angular_velocity/>
+        <linear_acceleration/>
+      </imu>
+
+    </sensor>
+  </gazebo>
+
+</robot>
